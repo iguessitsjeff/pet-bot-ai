@@ -1,0 +1,14 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+aws-lambda-powertools = "==2.41.0"
+openai = "==1.35.14"
+
+[dev-packages]
+ruff = "==0.5.2"
+
+[requires]
+python_version = "3.12"
