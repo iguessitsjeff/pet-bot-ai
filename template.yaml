@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Pet Bot AI Processing Lambda
+
+Parameters:
+  PetBotAppName:
+    Type: String
+    Default: "pet-bot-ai"
+
+
+Resources:
+  SmsPetBotSns:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub ${PetBotAppName}-topic
+  # Define the processing Lambda function
+  PetBotFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      FunctionName: !Sub ${PetBotAppName}-lambda
+      Handler: src.lambda_function.lambda_handler
+      CodeUri: .
+      Runtime: python3.10
+      Timeout: 60
+      MemorySize: 1024
+      Environment:
+        Variables:
+          LOG_LEVEL: INFO
+          POWERTOOLS_SERVICE_NAME: pet-bot-ai
+      Events:
+        PinpointSNSEvent:
+          Type: SNS
+          Properties:
+            Topic: !Ref SmsPetBotSns
+Outputs:
+  PetBotFunction:
+    Description: PetBotFunction function name
+    Value: !Ref PetBotFunction

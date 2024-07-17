@@ -1,0 +1,8 @@
+version: 0.1
+default:
+  build:
+    parameters:
+      mount_with: READ
+      build_dir: .aws-sam/build
+      cache_dir: .aws-sam/cache
+      template_file: template.[yaml|yml|json]
