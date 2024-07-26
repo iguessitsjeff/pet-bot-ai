@@ -19,8 +19,7 @@ Resources:
     Properties:
       FunctionName: !Sub ${PetBotAppName}-lambda
       Handler: src.lambda_function.lambda_handler
-      CodeUri: .
-      Runtime: python3.10
+      Runtime: python3.12
       Timeout: 60
       MemorySize: 1024
       Environment:

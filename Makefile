@@ -11,7 +11,7 @@ install:
 invoke-event:
 	$(PIPENV) requirements > requirements.txt; \
 	sam build --manifest requirements.txt; \
-	sam local invoke --event sns_event.json
+	sam local invoke --profile $(aws_profile) --event sns_event.json
 
 .PHONY: linter
 linter:

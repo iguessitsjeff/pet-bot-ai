@@ -1,0 +1,7 @@
+version=0.1
+[default.build.parameters]
+mount_with="READ"
+template_file="template.yaml"
+
+[default.local_invoke.parameters]
+log_file="local_invoke.log"
