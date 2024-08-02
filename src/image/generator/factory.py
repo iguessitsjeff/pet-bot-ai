@@ -1,4 +1,3 @@
-
 from src.config.loader import get_config_key
 from src.image.generator.protocol import ImageGenerator
 from src.image.generator.protocols.dalle_image_generator import DalleImageGenerator

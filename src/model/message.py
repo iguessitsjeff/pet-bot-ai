@@ -2,4 +2,5 @@ from pydantic import BaseModel
 
 
 class Message(BaseModel):
-    prompt: str
+    message: str
+    email: str
