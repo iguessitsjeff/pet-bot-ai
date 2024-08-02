@@ -5,3 +5,7 @@ template_file="template.yaml"
 
 [default.local_invoke.parameters]
 log_file="local_invoke.log"
+
+[default.local_start_api.parameters]
+warm_containers = "EAGER"
+log_file="local_api.log"

@@ -13,6 +13,12 @@ invoke-event:
 	sam build --manifest requirements.txt; \
 	sam local invoke --profile $(aws_profile) --event sns_event.json
 
+.PHONEY: start_api
+start_api:
+	$(PIPENV) requirements > requirements.txt; \
+	sam build --manifest requirements.txt; \
+	sam local start-api --profile $(aws_profile)
+
 .PHONY: linter
 linter:
 	$(PIPENV) run ruff check
