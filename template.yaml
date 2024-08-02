@@ -18,43 +18,7 @@ Resources:
       Name: Basic AWS Api Gateway
       StageName: Staging
       Auth:
-        ApiKeyRequired: true # sets for all methods
-
-  ApiKey: 
-    Type: AWS::ApiGateway::ApiKey
-    DependsOn: [ApiUsagePlan]
-    Properties: 
-      Name: !Sub ${PetBotAppName}-api-key
-      Description: "CloudFormation API Key V1"
-      Enabled: true
-      GenerateDistinctId: false
-      Value: abcdefg123456665ffghsdghfgdhfgdh4565
-      StageKeys:
-        - RestApiId: !Ref BasicAWSApiGateway
-          StageName: Staging
-
-  ApiUsagePlan:
-    Type: "AWS::ApiGateway::UsagePlan"
-    DependsOn:
-      - ServerlessHttpApiProdStage
-    Properties:
-      ApiStages: 
-        - ApiId: !Ref BasicAWSApiGateway
-          Stage: Staging
-      Description: !Sub "${PetBotAppName} usage plan"
-      Quota:
-        Limit: 1000
-        Period: MONTH
-      UsagePlanName: !Sub ${PetBotAppName}-usage-plan
-
-  ApiUsagePlanKey:
-    Type: "AWS::ApiGateway::UsagePlanKey"
-    DependsOn: 
-      - ServerlessHttpApi
-    Properties:
-      KeyId: !Ref ApiKey
-      KeyType: API_KEY
-      UsagePlanId: !Ref ApiUsagePlan
+        ApiKeyRequired: true # sets for all 
   # Define the processing Lambda function
   PetBotFunction:
     Type: AWS::Serverless::Function 
@@ -77,16 +41,21 @@ Resources:
           SecretArn: "arn:aws:secretsmanager:us-east-1:165443708813:secret:petbotkeys-1ipW27" #gitleaks:allow
 
       Events:
-        ApiEvent:
+        TelegramWebhookEvent:
           Type: Api
           Properties:
-            Path: /{proxy+}
-            Method: Any
+            Path: /telegram
+            Method: post
             RestApiId:
               Ref: BasicAWSApiGateway
             Auth:
               ApiKeyRequired: true
-Outputs:
-  PetBotFunction:
-    Description: PetBotFunction function name
-    Value: !Ref PetBotFunction
+        HealthEvent:
+          Type: Api
+          Properties:
+            Path: /health
+            Method: get
+            RestApiId:
+              Ref: BasicAWSApiGateway
+            Auth:
+              ApiKeyRequired: true

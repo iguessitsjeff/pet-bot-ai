@@ -2,12 +2,10 @@
 set -exu
 
 # Get SSO token before running AWS Commands
-aws sso login
 
 pipenv requirements > requirements.txt
 
 sam build
-sam local invoke --event local/json/local-event.json
 
 ## Inspect local invoke and make sure the lambda passed.
 echo

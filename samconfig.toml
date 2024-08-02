@@ -9,3 +9,12 @@ log_file="local_invoke.log"
 [default.local_start_api.parameters]
 warm_containers = "EAGER"
 log_file="local_api.log"
+[default.deploy.parameters]
+stack_name = "pet-bot-ai"
+resolve_s3 = true
+s3_prefix = "pet-bot-ai"
+region = "us-east-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "PetBotAppName=\"pet-bot-ai\" ApplicationEnv=\"dev\""
+image_repositories = []
