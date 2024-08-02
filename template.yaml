@@ -74,7 +74,7 @@ Resources:
           APPLICATION_ENV: !Ref ApplicationEnv
       Policies:
         AWSSecretsManagerGetSecretValuePolicy:
-          SecretArn: "arn:aws:secretsmanager:us-east-1:165443708813:secret:petbotkeys-1ipW27"
+          SecretArn: "arn:aws:secretsmanager:us-east-1:165443708813:secret:petbotkeys-1ipW27" #gitleaks:allow
 
       Events:
         ApiEvent:
