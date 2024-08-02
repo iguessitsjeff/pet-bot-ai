@@ -1,20 +1,21 @@
-import os
-
 import tomllib
 
-config: dict | None = None
+from src.config.constants import APPLICATION_ENV, CONFIG_PATH, CWD, ConfigKey
 
 
-def load_secrets():
-    cwd = os.getcwd()
-    global config
+def load_config() -> dict:
+    config = {}
+    initial_config = {}
+    env_config = {}
 
-    if config is not None:
-        return
+    with open(f"{CWD}/{CONFIG_PATH}/config.toml", "rb") as fp:
+        initial_config = tomllib.load(fp)
 
-    with open(f"{cwd}/local/sam/secrets.toml", "rb") as fp:
-        config = tomllib.load(fp)
+    with open(f"{CWD}/{CONFIG_PATH}/{APPLICATION_ENV}.toml", "rb") as fp:
+        env_config = tomllib.load(fp)
 
+    overall_config = initial_config | env_config
+    for key in ConfigKey:
+        config[key] = overall_config.get(key, None)
 
-def get_config_key(key: str, default: str | None = None) -> str:
-    return config.get(key, default)
+    return config

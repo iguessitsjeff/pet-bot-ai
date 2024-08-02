@@ -1,5 +1,5 @@
 from enum import StrEnum
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, Field, TypeAdapter
 
@@ -25,7 +25,11 @@ class Value(BaseModel):
     resolved_values: List[str] | None = Field(None, alias="resolvedValues")
 
 
-class Animal(BaseModel):
+class Adjective(BaseModel):
+    value: Value | None = None
+
+
+class Subject(BaseModel):
     value: Value | None = None
 
 
@@ -34,7 +38,8 @@ class ImageDescriptor(BaseModel):
 
 
 class Slots(BaseModel):
-    animal: Animal | None = Field(None, alias="Animal")
+    adjective: Adjective | None = Field(None, alias="Adjective")
+    subject: Subject | None = Field(None, alias="Subject")
     image_descriptor: ImageDescriptor | None = Field(None, alias="ImageDescriptor")
 
 
@@ -42,16 +47,10 @@ class Intent(BaseModel):
     name: str | None = None
     slots: Slots | None = None
     state: LexStates
-    confirmation_state: str | None = Field(None, alias="confirmationState")
 
 
 class SessionState(BaseModel):
-    dialog_action: Optional[DialogAction] = Field(None, alias="dialogAction")
     intent: Optional[Intent] = None
-    session_attributes: Optional[Dict[str, Any]] = Field(
-        None, alias="sessionAttributes"
-    )
-    originating_request_id: Optional[str] = Field(None, alias="originatingRequestId")
 
 
 class LexMessage(BaseModel):
@@ -82,3 +81,15 @@ class LexResponse(BaseModel):
         self.unpacked_session_state = SessionState.model_validate_json(
             self.session_state
         )
+
+    def get_text_back(self) -> str:
+        text_back: str = ""
+        for message in self.unpacked_messages:
+            text_back = f"{text_back}{message.content}\n"
+
+        return text_back
+
+    def get_prompt(self) -> str:
+        slots = self.unpacked_session_state.intent.slots
+        prompt: str = f"{slots.image_descriptor.value.interpreted_value} {slots.adjective.value.interpreted_value} {slots.subject.value.interpreted_value}"
+        return prompt

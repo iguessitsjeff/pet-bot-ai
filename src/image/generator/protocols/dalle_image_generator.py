@@ -10,7 +10,7 @@ logger = Logger()
 
 
 class DalleImageGenerator:
-    PROMPT_PREFIX = "Image of a"
+    PROMPT_PREFIX = "Image of a kid friendly"
 
     def __init__(self, api_key: str):
         self.client = OpenAI(api_key=api_key)

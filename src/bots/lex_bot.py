@@ -1,20 +1,15 @@
 from aws_lambda_powertools.logging import Logger
 from mypy_boto3_lexv2_runtime.type_defs import RecognizeUtteranceResponseTypeDef
 from src.aws.session import get_session
-from src.config.loader import get_config_key
 from src.model.lex_response import LexResponse
 
 logger: Logger = Logger()
 
 
 class LexBot:
-    def __init__(
-        self, bot_id: str = None, bot_alias_id: str = None, locale_id: str = "en_US"
-    ):
-        self.bot_id = bot_id if bot_id else get_config_key("LEX_BOT_ID")
-        self.bot_alias_id = (
-            bot_alias_id if bot_alias_id else get_config_key("LEX_BOT_ALIAS_ID")
-        )
+    def __init__(self, bot_id: str, bot_alias_id: str, locale_id: str = "en_US"):
+        self.bot_id = bot_id
+        self.bot_alias_id = bot_alias_id
         self.locale_id = locale_id
 
         self.client = get_session().client("lexv2-runtime")

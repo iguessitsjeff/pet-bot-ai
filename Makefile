@@ -17,7 +17,7 @@ invoke-event:
 start_api:
 	$(PIPENV) requirements > requirements.txt; \
 	sam build --manifest requirements.txt; \
-	sam local start-api --profile $(aws_profile)
+	sam local start-api --profile $(aws_profile) --parameter-overrides 'ApplicationEnv=dev'
 
 .PHONY: linter
 linter:

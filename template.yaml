@@ -6,6 +6,9 @@ Parameters:
   PetBotAppName:
     Type: String
     Default: "pet-bot-ai"
+  ApplicationEnv:
+    Type: String
+    Default: "dev"
 
 
 Resources:
@@ -14,11 +17,44 @@ Resources:
     Properties:
       Name: Basic AWS Api Gateway
       StageName: Staging
+      Auth:
+        ApiKeyRequired: true # sets for all methods
 
-  SmsPetBotSns:
-    Type: AWS::SNS::Topic
+  ApiKey: 
+    Type: AWS::ApiGateway::ApiKey
+    DependsOn: [ApiUsagePlan]
+    Properties: 
+      Name: !Sub ${PetBotAppName}-api-key
+      Description: "CloudFormation API Key V1"
+      Enabled: true
+      GenerateDistinctId: false
+      Value: abcdefg123456665ffghsdghfgdhfgdh4565
+      StageKeys:
+        - RestApiId: !Ref BasicAWSApiGateway
+          StageName: Staging
+
+  ApiUsagePlan:
+    Type: "AWS::ApiGateway::UsagePlan"
+    DependsOn:
+      - ServerlessHttpApiProdStage
     Properties:
-      TopicName: !Sub ${PetBotAppName}-topic
+      ApiStages: 
+        - ApiId: !Ref BasicAWSApiGateway
+          Stage: Staging
+      Description: !Sub "${PetBotAppName} usage plan"
+      Quota:
+        Limit: 1000
+        Period: MONTH
+      UsagePlanName: !Sub ${PetBotAppName}-usage-plan
+
+  ApiUsagePlanKey:
+    Type: "AWS::ApiGateway::UsagePlanKey"
+    DependsOn: 
+      - ServerlessHttpApi
+    Properties:
+      KeyId: !Ref ApiKey
+      KeyType: API_KEY
+      UsagePlanId: !Ref ApiUsagePlan
   # Define the processing Lambda function
   PetBotFunction:
     Type: AWS::Serverless::Function 
@@ -35,6 +71,11 @@ Resources:
           POWERTOOLS_LOG_LEVEL: INFO
           POWERTOOLS_LOGGER_SAMPLE_RATE: 0.1
           POWERTOOLS_LOGGER_LOG_EVENT: true
+          APPLICATION_ENV: !Ref ApplicationEnv
+      Policies:
+        AWSSecretsManagerGetSecretValuePolicy:
+          SecretArn: "arn:aws:secretsmanager:us-east-1:165443708813:secret:petbotkeys-1ipW27"
+
       Events:
         ApiEvent:
           Type: Api
@@ -43,6 +84,8 @@ Resources:
             Method: Any
             RestApiId:
               Ref: BasicAWSApiGateway
+            Auth:
+              ApiKeyRequired: true
 Outputs:
   PetBotFunction:
     Description: PetBotFunction function name

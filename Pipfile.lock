@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "4d37b61921c39564eb6314c2ff93287e3036870ed6f512c72a7b25ea650b58b2"
+            "sha256": "935cdd4d3654672e33e8bf34e3530599bc8ce2f3c9e3cc5b2936d4998363e989"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -44,7 +44,8 @@
         "boto3-stubs": {
             "extras": [
                 "lexv2-runtime",
-                "s3"
+                "s3",
+                "secretsmanager"
             ],
             "hashes": [
                 "sha256:1303deb7d749a2c9bd5a30830e1d537c1474b70c5f429e3db9af5d3eaa7b9696",
@@ -226,6 +227,13 @@
                 "sha256:7f9770d1f0e9f6fc2ced96daf5c0792b2dbbb4a4f874f28200ff3c940d0815c3"
             ],
             "version": "==1.34.138"
+        },
+        "mypy-boto3-secretsmanager": {
+            "hashes": [
+                "sha256:986511caa6626edfed7eb11b63c929801e9468c58e15927dc6fc0339c4eb34cb",
+                "sha256:e5a82c05cce68168a3709e5f0d35066cf250961db1d8670f0111da66206814c7"
+            ],
+            "version": "==1.34.145"
         },
         "openai": {
             "hashes": [
