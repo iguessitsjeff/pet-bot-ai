@@ -5,9 +5,7 @@ from src.aws.session import get_session
 logger = Logger()
 
 
-def get_secret(
-    key_store_name: str, secret_key: str, region_name: str = "us-east-1"
-) -> dict:
+def get_secret(key_store_name: str, region_name: str = "us-east-1") -> dict:
     # Create a Secrets Manager client
     session = get_session()
     client = session.client(service_name="secretsmanager", region_name=region_name)

@@ -1,3 +1,5 @@
 LEX_BOT_ID="IRELEIZVIY"
 LEX_BOT_ALIAS_ID="NVG4XVVJHD"
 API_KEY_STORE_NAME="petbotkeys"
+S3_STORE_BUCKET = "jpalmasolutions"
+S3_STORE_KEY_PREFIX = "openai/objects"

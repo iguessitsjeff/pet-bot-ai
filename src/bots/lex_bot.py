@@ -1,5 +1,6 @@
 from aws_lambda_powertools.logging import Logger
 from mypy_boto3_lexv2_runtime.type_defs import RecognizeUtteranceResponseTypeDef
+
 from src.aws.session import get_session
 from src.model.lex_response import LexResponse
 

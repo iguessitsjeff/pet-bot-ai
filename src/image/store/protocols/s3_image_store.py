@@ -4,13 +4,15 @@ from aws_lambda_powertools.logging import Logger
 from mypy_boto3_s3.client import S3Client
 
 from src.aws.session import get_session
+from src.config.constants import ConfigKey
 
 logger = Logger()
 
 
 class S3ImageStore:
-    BUCKET = "jpalmasolutions"
-    KEY_PREFIX = "openai/objects"
+    def __init__(self, config: dict[ConfigKey, str]):
+        self.BUCKET = config.get(ConfigKey.S3_STORE_BUCKET)
+        self.KEY_PREFIX = config.get(ConfigKey.S3_STORE_KEY_PREFIX)
 
     def save(self, content: bytes) -> bool:
         s3_client: S3Client = get_session().client("s3")
@@ -24,6 +26,6 @@ class S3ImageStore:
         try:
             s3_client.put_object(Bucket=self.BUCKET, Key=key, Body=content)
             return True
-        except Exception:
-            logger.exception()
+        except Exception as e:
+            logger.exception(e)
             return False

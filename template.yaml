@@ -9,7 +9,12 @@ Parameters:
   ApplicationEnv:
     Type: String
     Default: "dev"
-
+  S3Bucket:
+    Type: String
+  LexBotId:
+    Type: String
+  LexBotAliasId:
+    Type: String
 
 Resources:
   BasicAWSApiGateway:
@@ -17,8 +22,17 @@ Resources:
     Properties:
       Name: Basic AWS Api Gateway
       StageName: Staging
+      MethodSettings:
+        - ResourcePath: /*
+          HttpMethod: "*"
+          ThrottlingBurstLimit: 10
+          ThrottlingRateLimit: 10
       Auth:
-        ApiKeyRequired: true # sets for all 
+        ApiKeyRequired: false # sets for all 
+        UsagePlan:
+            CreateUsagePlan: PER_API
+            UsagePlanName: GatewayAuthorization
+        
   # Define the processing Lambda function
   PetBotFunction:
     Type: AWS::Serverless::Function 
@@ -37,19 +51,27 @@ Resources:
           POWERTOOLS_LOGGER_LOG_EVENT: true
           APPLICATION_ENV: !Ref ApplicationEnv
       Policies:
-        AWSSecretsManagerGetSecretValuePolicy:
-          SecretArn: "arn:aws:secretsmanager:us-east-1:165443708813:secret:petbotkeys-1ipW27" #gitleaks:allow
-
+      - AWSSecretsManagerGetSecretValuePolicy:
+          SecretArn: !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:petbotkeys-1ipW27" #gitleaks:allow
+      - S3WritePolicy:
+          BucketName: !Ref S3Bucket
+      - Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Action:
+          - lex:RecognizeUtterance
+          - lex:RecognizeText
+          - lex:StartConversation
+          Resource:
+          - !Sub arn:aws:lex:${AWS::Region}:${AWS::AccountId}:bot-alias/${LexBotId}/${LexBotAliasId}
       Events:
         TelegramWebhookEvent:
           Type: Api
           Properties:
-            Path: /telegram
+            Path: /message
             Method: post
             RestApiId:
               Ref: BasicAWSApiGateway
-            Auth:
-              ApiKeyRequired: true
         HealthEvent:
           Type: Api
           Properties:
@@ -57,5 +79,10 @@ Resources:
             Method: get
             RestApiId:
               Ref: BasicAWSApiGateway
-            Auth:
-              ApiKeyRequired: true
+Outputs:
+  ApiGateway:
+    Description: "The URL is:"
+    Value: !Sub "https://${BasicAWSApiGateway}.execute-api.${AWS::Region}.amazonaws.com/Staging/"
+  ApiKey:
+    Description: "You can find your API Key in the AWS console: (Put in the request HEADER as 'x-api-key')"
+    Value: !Sub "https://console.aws.amazon.com/apigateway/home?region=${AWS::Region}#/api-keys/${BasicAWSApiGateway}"

@@ -16,5 +16,5 @@ s3_prefix = "pet-bot-ai"
 region = "us-east-1"
 confirm_changeset = true
 capabilities = "CAPABILITY_IAM"
-parameter_overrides = "PetBotAppName=\"pet-bot-ai\" ApplicationEnv=\"dev\""
+parameter_overrides = "PetBotAppName=\"pet-bot-ai\" ApplicationEnv=\"dev\" S3Bucket=\"jpalmasolutions\" LexBotId=\"IRELEIZVIY\" LexBotAliasId=\"NVG4XVVJHD\""
 image_repositories = []
