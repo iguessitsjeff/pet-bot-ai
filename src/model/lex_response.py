@@ -2,7 +2,6 @@ from enum import StrEnum
 from typing import List, Optional
 
 from pydantic import BaseModel, Field, TypeAdapter
-
 from src.utils.decode import decode_and_uncompress
 
 
@@ -61,7 +60,7 @@ class LexMessage(BaseModel):
 class LexResponse(BaseModel):
     input_mode: str | None = Field(alias="inputMode", default=None)
     content_type: str = Field(alias="contentType", default=None)
-    messages: str
+    messages: str | None = None
     interpretations: str | None = None
     session_state: str | None = Field(alias="sessionState", default=None)
     request_attributes: str | None = Field(alias="requestAttributes", default=None)
@@ -73,16 +72,19 @@ class LexResponse(BaseModel):
     unpacked_session_state: SessionState | None = None
 
     def decode_fields(self):
-        self.messages = decode_and_uncompress(self.messages)
-        self.session_state = decode_and_uncompress(self.session_state)
-
-        messages_ta: TypeAdapter = TypeAdapter(list[LexMessage])
-        self.unpacked_messages = messages_ta.validate_json(self.messages)
-        self.unpacked_session_state = SessionState.model_validate_json(
-            self.session_state
-        )
+        if self.messages:
+            self.messages = decode_and_uncompress(self.messages)
+            messages_ta: TypeAdapter = TypeAdapter(list[LexMessage])
+            self.unpacked_messages = messages_ta.validate_json(self.messages)
+        if self.session_state:
+            self.session_state = decode_and_uncompress(self.session_state)
+            self.unpacked_session_state = SessionState.model_validate_json(
+                self.session_state
+            )
 
     def get_text_back(self) -> str:
+        if self.unpacked_messages is None:
+            return "Could not understand you. Please start by typing Hello."
         text_back: str = ""
         for message in self.unpacked_messages:
             text_back = f"{text_back}{message.content}\n"

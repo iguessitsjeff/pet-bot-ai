@@ -1,6 +1,5 @@
 from aws_lambda_powertools.event_handler.router import APIGatewayRouter
 from aws_lambda_powertools.logging import Logger
-
 from src.impl.message_impl import MessageImpl
 from src.model.execution_context import ExecutionContext
 from src.model.telegram_message import TelegramEvent
@@ -23,5 +22,5 @@ def message():
         message=tel_event.message.text,
         execution_context=execution_context,
     )
-    
+
     return {}

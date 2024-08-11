@@ -1,16 +1,16 @@
-import requests
 from aws_lambda_powertools.logging import Logger
 from openai import OpenAI
 from openai.types.image import Image
 from openai.types.images_response import ImagesResponse
-
 from src.image.store.protocol import ImageStore
+from src.utils.image import download_image
 
 logger = Logger()
 
 
 class DalleImageGenerator:
-    PROMPT_PREFIX = "Image of a kid friendly"
+    NAME: str = "Dalle 3"
+    PROMPT_PREFIX = "A graphically stunning with extensive details image of"
 
     def __init__(self, api_key: str):
         self.client = OpenAI(api_key=api_key)
@@ -36,11 +36,8 @@ class DalleImageGenerator:
             raise ValueError("Could not retrieve generated image.")
 
         logger.info(f"Dall e 3 Generated image: {image_url}")
-        image_response = requests.get(url=image_url)
 
-        image_response.raise_for_status()
-
-        content: bytes = image_response.content
+        content = download_image(image_url)
 
         if image_store:
             self._store_image(content=content, image_store=image_store)

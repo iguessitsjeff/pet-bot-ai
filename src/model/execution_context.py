@@ -1,7 +1,6 @@
-from telebot import TeleBot
-
 from src.config.constants import ConfigKey
 from src.config.secrets import Secrets
+from telebot import TeleBot
 
 
 class ExecutionContext:

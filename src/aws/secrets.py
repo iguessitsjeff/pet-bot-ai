@@ -5,7 +5,7 @@ from src.aws.session import get_session
 logger = Logger()
 
 
-def get_secret(key_store_name: str, region_name: str = "us-east-1") -> dict:
+def get_secret(key_store_name: str, region_name: str = "us-east-1") -> str:
     # Create a Secrets Manager client
     session = get_session()
     client = session.client(service_name="secretsmanager", region_name=region_name)
@@ -17,6 +17,6 @@ def get_secret(key_store_name: str, region_name: str = "us-east-1") -> dict:
         # https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
         raise e
 
-    secrets: dict = get_secret_value_response["SecretString"]
+    secrets: str = get_secret_value_response["SecretString"]
 
     return secrets

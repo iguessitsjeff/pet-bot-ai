@@ -1,5 +1,4 @@
 import tomllib
-
 from src.config.constants import APPLICATION_ENV, CONFIG_PATH, CWD, ConfigKey
 
 

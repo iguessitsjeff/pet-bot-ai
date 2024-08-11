@@ -2,7 +2,6 @@ import telebot
 from aws_lambda_powertools.event_handler import APIGatewayRestResolver
 from aws_lambda_powertools.logging import Logger
 from aws_lambda_powertools.utilities.typing import LambdaContext
-
 from src.config.constants import ConfigKey
 from src.config.loader import load_config
 from src.config.secrets import Secrets, load_secrets
@@ -11,7 +10,7 @@ from src.routes import message
 
 logger = Logger()
 config: dict[ConfigKey, str] = load_config()
-secrets: Secrets = load_secrets(config=config)
+secrets: Secrets = load_secrets()
 
 app = APIGatewayRestResolver()
 app.include_router(message.router, prefix="/message")

@@ -2,7 +2,6 @@ from uuid import uuid4
 
 from aws_lambda_powertools.logging import Logger
 from mypy_boto3_s3.client import S3Client
-
 from src.aws.session import get_session
 from src.config.constants import ConfigKey
 

@@ -1,15 +1,14 @@
 from io import BytesIO
 
-from telebot import TeleBot
-from telebot.types import InputFile
-
 from src.bots.lex_bot import LexBot
 from src.config.constants import ConfigKey
-from src.image.generator.factory import get_image_generator
+from src.image.generator.factory import get_all_generators
 from src.image.generator.protocol import ImageGenerator
 from src.image.store.protocols.s3_image_store import S3ImageStore
 from src.model.execution_context import ExecutionContext
 from src.model.lex_response import LexResponse, LexStates
+from telebot import TeleBot
+from telebot.types import InputFile
 
 
 class MessageImpl:
@@ -30,16 +29,21 @@ class MessageImpl:
         if (
             lex_response.unpacked_session_state.intent.state
             is LexStates.READY_FOR_FULLFILLMENT
+            and lex_response.unpacked_session_state.intent.name != "FallbackIntent"
         ):
             prompt: str = lex_response.get_prompt()
 
-            image_generator: ImageGenerator = get_image_generator(
+            image_generators: list[ImageGenerator] = get_all_generators(
                 execution_context.secrets
             )
             image_store: S3ImageStore = S3ImageStore(execution_context.config)
-            image_content: bytes = image_generator.generate_image(
-                prompt=prompt, image_store=image_store
-            )
-            execution_context.tele_bot.send_photo(
-                chat_id=chat_id, photo=InputFile(BytesIO(image_content))
-            )
+
+            for generator in image_generators:
+                image_content: bytes = generator.generate_image(
+                    prompt=prompt, image_store=image_store
+                )
+                execution_context.tele_bot.send_photo(
+                    caption=generator.NAME,
+                    chat_id=chat_id,
+                    photo=InputFile(BytesIO(image_content)),
+                )
